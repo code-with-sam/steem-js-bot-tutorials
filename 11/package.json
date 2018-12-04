@@ -1,0 +1,22 @@
+{
+  "name": "bot-11",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot-11.js",
+  "scripts": {
+    "start": "node ./bot-11.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code-with-sam/bot-11.git"
+  },
+  "author": "Sam Billingham",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/code-with-sam/bot-11/issues"
+  },
+  "homepage": "https://github.com/code-with-sam/bot-11#readme",
+  "dependencies": {
+    "steem": "^0.7.1"
+  }
+}

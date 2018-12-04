@@ -1,0 +1,51 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  </head>
+  <body>
+    <main class="container">
+      <h2>TRAVEL Comp Post Entries</h2>
+      <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Name</th>
+              <th scope="col">Post</th>
+              <th><span class="random btn btn-sm btn-primary">Select Random Entry</span></th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+    </main>
+
+    <script
+    src="http://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+  <script>
+  let entries;
+
+  $.getJSON('./entries.json', function(json) {
+      console.log(json);
+      entries = json.length;
+      json.forEach((item, i) => {
+        let template =
+        `<tr>
+          <th>${i+1}</th>
+          <td>${item.name}</td>
+          <td><a href="https://steemit.com/@${item.name}/${item.permlink}">${item.title}</a></td>
+        </tr>`
+        $('tbody').append(template)
+      })
+  });
+
+  $('.random').on('click', function(){
+    let random = Math.floor(Math.random() * entries)
+    console.log(random)
+    let winner = $('tbody tr').eq(random).css('background', 'red')
+    // $('tbody').prepend(winner.clone())
+  })
+  </script>
+  </body>
+</html>

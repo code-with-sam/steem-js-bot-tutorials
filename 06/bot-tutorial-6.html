@@ -1,0 +1,31 @@
+<html>
+    <head>
+    <title>Bot's in Steem-js</title>
+      <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
+      <script>
+        console.log('Hello, Is Anybody OUt There!?')
+
+        // Tutorial 06 - Auto Claim Bot
+        const ACCOUNT_NAME = ''
+        const ACCOUNT_KEY = ''
+        const INTERVAL = 60 * 60 * 1000
+
+        setInterval(claimBalance, INTERVAL)
+
+        function claimBalance(){
+          steem.api.getAccounts([ACCOUNT_NAME], function(err, result){
+              console.log(err, result)
+
+              let sbdReward = result[0].reward_sbd_balance
+              let steemReward = result[0].reward_steem_balance
+              let steemPowerInVests = result[0].reward_vesting_balance
+
+              steem.broadcast.claimRewardBalance(ACCOUNT_KEY, ACCOUNT_NAME, steemReward, sbdReward, steemPowerInVests, function(err, result) {
+                console.log(err, result);
+              });
+          })
+        }
+      </script>
+    </head>
+    <body>Check The Console.</body>
+</html>

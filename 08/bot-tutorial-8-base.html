@@ -1,0 +1,36 @@
+<html>
+    <head>
+    <title>Bot's in Steem-js 8</title>
+      <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
+      <script>
+        console.log('Hello, Is Anybody Out There!?')
+
+        // Tutorial 08 - stats responder Bot START
+        const ACCOUNT_NAME = ''
+        const ACCOUNT_KEY = ''
+
+        steem.api.setOptions({ url: 'https://api.steemit.com' });
+
+        steem.api.streamTransactions('head', function(err, result) {
+          let txType = result.operations[0][0]
+          let txData = result.operations[0][1]
+          let includesMention = checkContentForMention(txType,txData)
+          if (includesMention) {
+            console.log('MENTION FOUND: ', txData)
+            // ADD CODE FOR WHEN MENTION FOUND
+          }
+        });
+
+        function checkContentForMention(txType,txData) {
+          if(txType == 'comment') {
+            console.log('CHECKING FOR MENTION: ', txData)
+            let commentBody = txData.body;
+            let mentionUsername = '@' + ACCOUNT_NAME;
+            return commentBody.includes(mentionUsername);
+          }
+        }
+
+      </script>
+    </head>
+    <body>Check The Console</body>
+</html>

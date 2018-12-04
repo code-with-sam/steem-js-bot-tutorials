@@ -1,0 +1,80 @@
+<html>
+    <head>
+    <title>Bot's in Steem-js 8</title>
+      <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
+      <script>
+        console.log('Hello, Is Anybody OUt There!?')
+
+        // Tutorial 08 - stats responder Bot
+        const ACCOUNT_NAME = ''
+        const ACCOUNT_KEY = ''
+
+        steem.api.setOptions({ url: 'https://api.steemit.com' });
+
+        steem.api.streamTransactions('head', function(err, result) {
+          let txType = result.operations[0][0]
+          let txData = result.operations[0][1]
+          let includesMention = checkContentForMention(txType,txData)
+          if (includesMention) {
+            console.log('MENTION FOUND: ', txData)
+            getStats(txData)
+          }
+        });
+
+        function checkContentForMention(txType,txData) {
+          if(txType == 'comment') {
+            console.log('CHECKING FOR MENTION: ', txData)
+            let commentBody = txData.body;
+            let mentionUsername = '@' + ACCOUNT_NAME;
+            return commentBody.includes(mentionUsername);
+          }
+        }
+
+        function getStats(txData){
+            steem.api.getState(`/@${txData.author}/`, (err, result) => {
+              let resultsArray = [];
+              for ( post in result.content ){
+                resultsArray.push({
+                  votes: result.content[post].net_votes,
+                  replies: result.content[post].children,
+                  length: result.content[post].body.split(' ').length
+                })
+              }
+              let statsData = {
+                averageVotes: resultsArray.reduce((a,b) => a + b.votes, 0) / resultsArray.length,
+                averageReplies: resultsArray.reduce((a,b) => a + b.replies, 0) / resultsArray.length,
+                averageLength:  resultsArray.reduce((a,b) => a + b.length, 0) / resultsArray.length
+              }
+              reply(txData, statsData)
+            })
+        }
+        function reply(txData, statsData){
+          let comment = `I'm the statistics responder bot, reporting as requested.<br><br>Average Votes Per Post: ${statsData.averageVotes} <br>Average Replies Per Post: ${statsData.averageReplies} <br>Average Post Word count: ${statsData.averageLength} <br>`
+
+          steem.broadcast.comment(
+            ACCOUNT_KEY,
+            txData.author,
+            txData.permlink,
+            ACCOUNT_NAME,
+            randomString(),
+            '',
+            comment,
+            { tags: ['stats'], app: 'statsbot' },
+            function(err, result) {
+              console.log(err, result);
+            }
+          );
+        }
+
+        function randomString() {
+          let string = ''
+          let allowedChars = "abcdefghijklmnopqrstuvwxyz0123456789";
+          for (var i = 0; i < 32; i++){
+            string += allowedChars.charAt(Math.floor(Math.random() * allowedChars.length));
+          }
+          return string + '-post';
+        }
+      </script>
+    </head>
+    <body>Check The Console</body>
+</html>

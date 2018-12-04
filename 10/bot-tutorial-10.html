@@ -1,0 +1,63 @@
+<html>
+    <head>
+    <title>Bot's in Steem-js</title>
+      <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
+
+    </head>
+    <body>
+      <script
+  src="http://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+      <script>
+
+      let reblogs = []
+      const TARGET_PERMLINK =  'finally-a-comments-system-that-rewards-its-authors-steemcomments-js-got-an-upgrade'
+      const BLOCK = 19642524
+      const BLOCK_TIME = new Date('2018-02-06T20:59:36').valueOf()
+      const END_TIME = new Date('2018-02-07T20:59:36').valueOf()
+
+    getBlock(BLOCK,BLOCK_TIME)
+
+    function getBlock(blockNumber, blockTime){
+
+      if (blockTime < END_TIME){
+        steem.api.getBlock(blockNumber, function(err, block) {
+
+          let blockTime = new Date(block.timestamp).valueOf()
+          let nextBlock = blockNumber + 1
+
+          checkTransactions(block.transactions, block.timestamp)
+          getBlock(nextBlock , blockTime)
+
+        });
+      } else {
+        console.log('finished')
+      }
+    }
+
+    function checkTransactions(transactions, timestamp){
+
+      transactions.forEach(function(tx) {
+        let txType = tx.operations[0][0]
+        let txData = tx.operations[0][1]
+        console.log(tx)
+
+        if(txType === 'custom_json') {
+          let jsonData = JSON.parse(tx.operations[0][1].json)
+
+          if( jsonData[0] === 'reblog' && jsonData[1].permlink === TARGET_PERMLINK) {
+              console.log(jsonData)
+              reblogs.push(jsonData)
+              $('body').append(`<p><a href="https://steemit.com/@${jsonData[1].account}/">${jsonData[1].account}</a>" : ${timestamp}</p>`)
+            }
+          }
+      })
+    }
+
+
+
+      </script>
+
+    </body>
+</html>
